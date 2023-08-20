@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,7 @@ typedef struct {
 } InputBuffer;
 
 typedef struct {
-  __uint32_t id;
+  uint32_t id;
   char username[COLUMN_USERNAME_SIZE];
   char email[COLUMN_EMAIL_SIZE];
 } Row;
@@ -45,13 +46,13 @@ typedef struct {
 // row
 #define size_of_attribute(Struct, Attribute) sizeof(((Struct*)0)->Attribute)
 
-const __uint32_t ID_SIZE = size_of_attribute(Row, id);
-const __uint32_t USERNAME_SIZE = size_of_attribute(Row, username);
-const __uint32_t EMAIL_SIZE = size_of_attribute(Row, email);
-const __uint32_t ID_OFFSET = 0;
-const __uint32_t USERNAME_OFFSET = ID_OFFSET + ID_SIZE;
-const __uint32_t EMAIL_OFFSET = USERNAME_OFFSET + USERNAME_SIZE;
-const __uint32_t ROW_SIZE = ID_SIZE + USERNAME_SIZE + EMAIL_SIZE;
+const uint32_t ID_SIZE = size_of_attribute(Row, id);
+const uint32_t USERNAME_SIZE = size_of_attribute(Row, username);
+const uint32_t EMAIL_SIZE = size_of_attribute(Row, email);
+const uint32_t ID_OFFSET = 0;
+const uint32_t USERNAME_OFFSET = ID_OFFSET + ID_SIZE;
+const uint32_t EMAIL_OFFSET = USERNAME_OFFSET + USERNAME_SIZE;
+const uint32_t ROW_SIZE = ID_SIZE + USERNAME_SIZE + EMAIL_SIZE;
 
 typedef struct {
   StatementType type;
@@ -61,11 +62,11 @@ typedef struct {
 // table
 #define TABLE_MAX_PAGES 100
 
-const __uint32_t PAGE_SIZE = 4096;
-const __uint32_t ROWS_PER_PAGE = PAGE_SIZE / ROW_SIZE;
-const __uint32_t TABLE_MAX_ROWS = ROWS_PER_PAGE * TABLE_MAX_PAGES;
+const uint32_t PAGE_SIZE = 4096;
+const uint32_t ROWS_PER_PAGE = PAGE_SIZE / ROW_SIZE;
+const uint32_t TABLE_MAX_ROWS = ROWS_PER_PAGE * TABLE_MAX_PAGES;
 typedef struct {
-  __uint32_t num_rows;
+  uint32_t num_rows;
   void* pages[TABLE_MAX_PAGES];
 } Table;
 
@@ -141,15 +142,15 @@ void deserialize_row(void* source, Row* destination) {
   memcpy(&(destination->email), source + EMAIL_OFFSET, EMAIL_SIZE);
 }
 
-void* row_slot(Table* table, __uint32_t row_num) {
-  __uint32_t page_num = row_num / ROWS_PER_PAGE;
+void* row_slot(Table* table, uint32_t row_num) {
+  uint32_t page_num = row_num / ROWS_PER_PAGE;
   void* page = table->pages[page_num];
   if (page == NULL) {
     // Allocate memory only when we try to access page
     page = table->pages[page_num] = malloc(PAGE_SIZE);
   }
-  __uint32_t row_offset = row_num % ROWS_PER_PAGE;
-  __uint32_t byte_offset = row_offset * ROW_SIZE;
+  uint32_t row_offset = row_num % ROWS_PER_PAGE;
+  uint32_t byte_offset = row_offset * ROW_SIZE;
   return page + byte_offset;
 }
 
